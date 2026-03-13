@@ -1,0 +1,167 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>Agendamentos</h1>
+      <p>Visualizacao mensal e diaria</p>
+    </div>
+
+    <div class="header-actions">
+      <div class="view-switch">
+        <button type="button" class="btn ghost" [class.active]="viewMode() === 'month'" (click)="setViewMode('month')">
+          Mes
+        </button>
+        <button type="button" class="btn ghost" [class.active]="viewMode() === 'day'" (click)="setViewMode('day')">
+          Dia
+        </button>
+      </div>
+      <button type="button" class="btn primary" (click)="openCreateModal()">Novo Agendamento</button>
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p>Carregando...</p>
+  } @else {
+    <div class="calendar-card">
+      <div class="calendar-toolbar">
+        <button type="button" class="btn ghost" (click)="previousPeriod()">Anterior</button>
+        <h2>{{ viewMode() === 'month' ? monthLabel() : dayLabel() }}</h2>
+        <button type="button" class="btn ghost" (click)="nextPeriod()">Proximo</button>
+      </div>
+
+      <form class="filters-bar" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">  <label>    <span>Clinica</span>    <select formControlName="clinicaId">      <option value="">Todas</option>      @for (c of clinicas(); track c._id) {        <option [value]="c._id">{{ c.nome }}</option>      }    </select>  </label>  <label>    <span>Medico</span>    <select formControlName="medicoId">      <option value="">Todos</option>      @for (m of medicos(); track m._id) {        <option [value]="m._id">{{ m.nome }}</option>      }    </select>  </label>  <label>    <span>Paciente</span>    <select formControlName="pacienteId">      <option value="">Todos</option>      @for (p of pacientes(); track p._id) {        <option [value]="p._id">{{ p.nome }}</option>      }    </select>  </label>  <label>    <span>Data inicio</span>    <input type="date" formControlName="dataInicio" />  </label>  <label>    <span>Data fim</span>    <input type="date" formControlName="dataFim" />  </label>  <label>    <span>Pagamento</span>    <select formControlName="pagou">      <option value="">Todos</option>      <option value="true">Pagos</option>      <option value="false">Nao pagos</option>    </select>  </label>  <div class="filters-actions">    <button type="submit" class="btn primary">Aplicar</button>    <button type="button" class="btn ghost" (click)="clearFilters()">Limpar</button>  </div></form>
+      @if (viewMode() === 'month') {
+        <div class="month-view">
+          <div class="week-days">
+            @for (day of weekDays; track day) {
+              <div>{{ day }}</div>
+            }
+          </div>
+
+          <div class="month-grid">
+            @for (cell of monthDays(); track cell.date.toISOString()) {
+              <button
+                type="button"
+                class="day-cell"
+                [class.out-month]="!cell.inMonth"
+                [class.selected]="isSelected(cell.date)"
+                [class.today]="isToday(cell.date)"
+                (click)="selectDay(cell.date)">
+                <span class="day-number">{{ cell.date.getDate() }}</span>
+                @if (countAppointments(cell.date) > 0) {
+                  <span class="badge">{{ countAppointments(cell.date) }} ag.</span>
+                }
+              </button>
+            }
+          </div>
+        </div>
+      } @else {
+        <div class="day-view">
+          <h3>{{ dayLabel() }}</h3>
+          <div class="agenda-list">
+            @for (item of dayAppointments(); track item._id) {
+              <article class="agenda-item">
+                <div class="time">{{ formatTime(item.dataHora) }}</div>
+                <div class="info">
+                  <strong>{{ getName(item.pacienteId) }}</strong>
+                  <span>Clinica: {{ getName(item.clinicaId) }}</span>
+                  <span>Medico: {{ getName(item.medicoId) }}</span>
+                  <span>Duracao: {{ item.duracaoMinutos }} min</span>
+                  <span>Valor: {{ formatCurrency(item.valor) }}</span>
+                  <span>Pagamento: {{ item.pagou ? 'Pago' : 'Pendente' }}</span>
+                </div>
+                <div class="item-actions">
+                  <button type="button" class="btn ghost" (click)="openEditModal(item)">Editar</button>
+                  <button type="button" class="btn danger" (click)="remove(item._id)">Excluir</button>
+                </div>
+              </article>
+            } @empty {
+              <p class="empty">Sem agendamentos para este dia.</p>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</section>
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>{{ editingId() ? 'Editar Agendamento' : 'Novo Agendamento' }}</h2>
+        <button type="button" class="close" (click)="closeModal()">x</button>
+      </header>
+      @if (error()) {
+        <p class="error modal-error">{{ error() }}</p>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid">
+          <label>
+            <span>Clinica</span>
+            <select formControlName="clinicaId">
+              <option value="">Selecione...</option>
+              @for (item of clinicas(); track item._id) {
+                <option [value]="item._id">{{ item.nome }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>Medico</span>
+            <select formControlName="medicoId">
+              <option value="">Selecione...</option>
+              @for (item of medicos(); track item._id) {
+                <option [value]="item._id">{{ item.nome }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>Paciente</span>
+            <select formControlName="pacienteId">
+              <option value="">Selecione...</option>
+              @for (item of pacientes(); track item._id) {
+                <option [value]="item._id">{{ item.nome }}</option>
+              }
+            </select>
+          </label>
+
+          <label>
+            <span>Data e Hora</span>
+            <input type="datetime-local" formControlName="dataHora" />
+          </label>
+
+          <label>
+            <span>Duracao (minutos)</span>
+            <input type="number" min="1" formControlName="duracaoMinutos" />
+          </label>
+
+          <label>
+            <span>Valor</span>
+            <input type="number" min="0" step="0.01" formControlName="valor" />
+          </label>
+
+          <label class="checkbox-field">
+            <span>Pagamento</span>
+            <select formControlName="pagou">
+              <option [ngValue]="false">Nao pagou</option>
+              <option [ngValue]="true">Pagou</option>
+            </select>
+          </label>
+        </div>
+
+        <footer class="modal-actions">
+          <button type="button" class="btn ghost" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">
+            {{ saving() ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}

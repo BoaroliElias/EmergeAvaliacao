@@ -1,0 +1,85 @@
+<section class="page">
+  <header class="page-header">
+    <div>
+      <h1>{{ config.title }}</h1>
+      <p>{{ config.subtitle }}</p>
+    </div>
+    <button type="button" class="btn primary" (click)="openCreateModal()">Novo</button>
+  </header>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p>Carregando...</p>
+  } @else {
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            @for (field of config.fields; track field.key) {
+              <th>{{ field.label }}</th>
+            }
+            <th>Acoes</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track trackById($index, item)) {
+            <tr>
+              @for (field of config.fields; track field.key) {
+                <td>{{ fieldValue(item, field) }}</td>
+              }
+              <td class="actions">
+                <button type="button" class="btn ghost" (click)="openEditModal(item)">Editar</button>
+                <button type="button" class="btn danger" (click)="remove(item._id)">Excluir</button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td [attr.colspan]="config.fields.length + 1">Nenhum registro encontrado.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</section>
+
+@if (modalOpen()) {
+  <div class="modal-backdrop" (click)="closeModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <header class="modal-header">
+        <h2>{{ editingId() ? 'Editar' : 'Novo' }} {{ config.title.slice(0, -1) }}</h2>
+        <button type="button" class="close" (click)="closeModal()">x</button>
+      </header>
+
+      <form [formGroup]="form" (ngSubmit)="save()">
+        <div class="form-grid">
+          @for (field of config.fields; track field.key) {
+            <label>
+              <span>{{ field.label }}</span>
+              @if (field.type === 'select') {
+                <select [formControlName]="field.key">
+                  <option value="">Selecione...</option>
+                  @for (option of optionsFor(field); track option._id) {
+                    <option [value]="option._id">{{ option.nome }}</option>
+                  }
+                </select>
+              } @else {
+                <input [type]="field.type" [formControlName]="field.key" />
+              }
+            </label>
+          }
+        </div>
+
+        <footer class="modal-actions">
+          <button type="button" class="btn ghost" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn primary" [disabled]="saving()">
+            {{ saving() ? 'Salvando...' : 'Salvar' }}
+          </button>
+        </footer>
+      </form>
+    </div>
+  </div>
+}

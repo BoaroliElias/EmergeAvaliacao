@@ -1,0 +1,27 @@
+<div class="main-container">
+  <header class="topbar">
+    <div class="navbar-header">
+      <div class="brand-mark">E</div>
+      <div class="brand-text">Emerge Avaliacao</div>
+    </div>
+    <div class="establishment-name">Painel Administrativo</div>
+  </header>
+
+  <div class="shell">
+    <aside class="sidebar" id="snav">
+      <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/clinicas" routerLinkActive="active">Clinicas</a>
+      <a routerLink="/medicos" routerLinkActive="active">Medicos</a>
+      <a routerLink="/pacientes" routerLinkActive="active">Pacientes</a>
+      <a routerLink="/agendamentos" routerLinkActive="active">Agendamentos</a>
+    </nav>
+  </aside>
+
+    <main class="page-wrapper">
+      <div class="page-content">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+  </div>
+</div>

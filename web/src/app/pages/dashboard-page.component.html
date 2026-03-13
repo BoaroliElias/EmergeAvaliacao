@@ -1,0 +1,104 @@
+<section class="page">
+    <header class="page-header">
+      <div>
+        <h1>Dashboard de Agendamentos</h1>
+        <p>Metricas operacionais por periodo</p>
+      </div>
+    </header>
+  
+    @if (error()) {
+      <p class="error">{{ error() }}</p>
+    }
+  
+    <form class="filters-bar" [formGroup]="filtroForm" (ngSubmit)="loadIndicadores()">
+      <label>
+        <span>Data inicio</span>
+        <input type="date" formControlName="dataInicio" />
+      </label>
+  
+      <label>
+        <span>Data fim</span>
+        <input type="date" formControlName="dataFim" />
+      </label>
+  
+      <div class="filters-actions">
+        <button type="submit" class="btn primary">Aplicar</button>
+        <button type="button" class="btn ghost" (click)="limparFiltro()">Limpar</button>
+      </div>
+    </form>
+  
+    @if (loading()) {
+      <p>Carregando indicadores...</p>
+    } @else if (indicadores()) {
+      <div class="cards-grid">
+        <div class="card">
+          <h3>Total de agendamentos</h3>
+          <p class="value">{{ indicadores()!.totalAgendamentos }}</p>
+        </div>
+  
+        <div class="card">
+          <h3>Valor total recebido</h3>
+          <p class="value">{{ formatCurrency(indicadores()!.valorTotalRecebido) }}</p>
+        </div>
+  
+        <div class="card">
+          <h3>Valor pendente</h3>
+          <p class="value">{{ formatCurrency(indicadores()!.valorPendente) }}</p>
+        </div>
+      </div>
+  
+      <div class="tables-grid">
+        <section class="table-card">
+          <h3>Total por clinica</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Clinica</th>
+                <th>Qtde</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of indicadores()!.totalPorClinica; track item.clinicaId) {
+                <tr>
+                  <td>{{ item.nomeClinica || item.clinicaId }}</td>
+                  <td>{{ item.total }}</td>
+                  <td>{{ formatCurrency(item.valor) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3">Sem dados para o periodo selecionado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+  
+        <section class="table-card">
+          <h3>Total por medico</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Medico</th>
+                <th>Qtde</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (item of indicadores()!.totalPorMedico; track item.medicoId) {
+                <tr>
+                  <td>{{ item.nomeMedico || item.medicoId }}</td>
+                  <td>{{ item.total }}</td>
+                  <td>{{ formatCurrency(item.valor) }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3">Sem dados para o periodo selecionado.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </section>
+      </div>
+    }
+  </section>
