@@ -62,6 +62,8 @@ Implementacoes:
     - no topo da pagina de agendamentos;
     - e dentro da modal de criacao/edicao de agendamento.
 
+![Tela validações agendamentos](docs/img/valiacoesAgendamento.png)
+
 ---
 
 ## Tarefa 02 – Filtros de Listagem (Agendamentos)
@@ -136,6 +138,8 @@ Implementacoes:
   - Filtros são aplicados sem recarregar a pagina, atualizando só a lista de agendamentos.
   - O `filtersForm` não é resetado ao alternar entre visualizacao Mes/Dia, mantendo os filtros ativos.
 
+
+  ![Tela de filtros de agendamentos](docs/img/filtrosAgendamento.png)
 ---
 
 ## Tarefa 03 – Dashboard de Indicadores
@@ -229,6 +233,10 @@ Implementacoes:
 - **Navegacao**
   - Rota `/dashboard` adicionada em `app.routes.ts`.
   - Item “Dashboard” no menu lateral (`app.component.html`) apontando para essa rota.
+
+
+  ![Dashboard de agendamentos](docs/img/dashboard.png)
+---
 
 ## Conclusão
   - NodeJs (NestJS) é bem parecido com C# .NET, ambos seguem mesmo paradigma de APIs REST em camadas.
