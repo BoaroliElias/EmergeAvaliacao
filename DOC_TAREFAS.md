@@ -230,4 +230,10 @@ Implementacoes:
   - Rota `/dashboard` adicionada em `app.routes.ts`.
   - Item “Dashboard” no menu lateral (`app.component.html`) apontando para essa rota.
 
+## Conclusão
+  - NodeJs (NestJS) é bem parecido com C# .NET, ambos seguem mesmo paradigma de APIs REST em camadas.
+  - NestJS lembra muito ASP.NET Core. Em ambos boa parte do trabalho é desenhar contratos (DTOs), aplicar as regras de negocio em serviços e centralizar configuracoes.
+  - O banco tambem tem suas diferenças por ser NoSQL. A ideia de model + consultas tipadas é similar, mas o modelo de dados de documento vs tabela muda a forma de pensar joins. Aqui tem que fazer $lookup em vez de include/JOIN. (Pelo menos da forma que encontrei pra fazer, pode haver outras.)
+  - Em resumo as ideias e paradigmas são quase idênticos; o que muda são detalhes de sintaxe, nomes de classes e bibliotecas.
+
 ---
